@@ -17,15 +17,38 @@ const ProviderProfile = () => {
         return <div className="text-center py-20 text-gray-500">Provider not found</div>;
     }
 
-    const handleBookingSubmit = (data) => {
-        console.log('Booking submitted:', data);
-        setShowBookingForm(false);
-        setToast({ message: `Booking request sent for ${data.date}!`, type: 'success' });
+    const handleBookingSubmit = async (data) => {
+        try {
+            const response = await fetch('http://localhost:5000/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    providerId: provider.id,
+                    customerName: data.name, // Assuming form data has 'name'
+                    service: provider.category, // Using provider category as service name
+                    date: data.date,
+                    status: 'requested',
+                    address: data.address, // functional requirement usually needs this
+                    notes: data.notes
+                }),
+            });
 
-        // Delay redirect to let user see the toast
-        setTimeout(() => {
-            navigate('/customer');
-        }, 2000);
+            if (response.ok) {
+                setShowBookingForm(false);
+                setToast({ message: `Booking request sent for ${data.date}!`, type: 'success' });
+                // Delay redirect to let user see the toast
+                setTimeout(() => {
+                    navigate('/customer');
+                }, 2000);
+            } else {
+                throw new Error('Failed to submit booking');
+            }
+        } catch (error) {
+            console.error('Booking error:', error);
+            setToast({ message: 'Failed to submit booking. Please try again.', type: 'error' });
+        }
     };
 
     return (
