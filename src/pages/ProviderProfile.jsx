@@ -3,11 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { providers } from '../data/providers';
 import { Star, MapPin, CheckCircle, Clock } from 'lucide-react';
 import BookingForm from '../components/booking/BookingForm';
+import Toast from '../components/common/Toast';
 
 const ProviderProfile = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [showBookingForm, setShowBookingForm] = useState(false);
+    const [toast, setToast] = useState(null);
 
     const provider = providers.find(p => p.id === parseInt(id));
 
@@ -17,14 +19,19 @@ const ProviderProfile = () => {
 
     const handleBookingSubmit = (data) => {
         console.log('Booking submitted:', data);
-        // In a real app, we would send this to the backend
-        alert(`Booking request sent for ${data.date}!`);
         setShowBookingForm(false);
-        navigate('/customer');
+        setToast({ message: `Booking request sent for ${data.date}!`, type: 'success' });
+
+        // Delay redirect to let user see the toast
+        setTimeout(() => {
+            navigate('/customer');
+        }, 2000);
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
+            {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+
             <button
                 onClick={() => navigate(-1)}
                 className="group flex items-center text-gray-500 hover:text-indigo-600 font-medium mb-8 transition-colors duration-200"
