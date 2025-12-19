@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import ProviderList from '../components/customer/ProviderList';
 import { providers } from '../data/providers';
 import { categories } from '../data/categories';
+import { bookings } from '../data/bookings';
+import BookingStatus from '../components/customer/BookingStatus';
+import BookingTimeline from '../components/customer/BookingTimeline';
+import { formatDate, formatCurrency } from '../utils/helpers';
 
 const CustomerDashboard = () => {
     const navigate = useNavigate();
