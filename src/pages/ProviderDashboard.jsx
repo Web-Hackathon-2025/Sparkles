@@ -31,13 +31,13 @@ const ProviderDashboard = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 border-b border-gray-200 pb-6">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Provider Portal</h1>
-                    <p className="text-gray-500 mt-1">Welcome back, {providerProfile?.name}</p>
+                    <p className="text-gray-500 mt-2">Welcome back, {providerProfile?.name}</p>
                 </div>
-                <div className="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-lg font-medium">
-                    Earnings: $72
+                <div className="mt-4 md:mt-0 bg-indigo-50 text-indigo-700 px-6 py-3 rounded-xl font-bold border border-indigo-100 shadow-sm">
+                    Earnings: <span className="text-2xl ml-2">$72</span>
                 </div>
             </div>
 

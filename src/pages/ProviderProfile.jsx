@@ -27,9 +27,12 @@ const ProviderProfile = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <button
                 onClick={() => navigate(-1)}
-                className="text-gray-500 hover:text-gray-900 font-medium mb-6 flex items-center"
+                className="group flex items-center text-gray-500 hover:text-indigo-600 font-medium mb-8 transition-colors duration-200"
             >
-                &larr; Back to Listings
+                <div className="mr-2 p-1 rounded-full group-hover:bg-indigo-50 transition-colors">
+                    &larr;
+                </div>
+                Back to Listings
             </button>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
