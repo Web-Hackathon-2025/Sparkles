@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProviderList from '../components/customer/ProviderList';
 import { categories } from '../data/categories';
-import { bookings } from '../data/bookings';
 import BookingStatus from '../components/customer/BookingStatus';
 import BookingTimeline from '../components/customer/BookingTimeline';
 import { formatDate, formatCurrency } from '../utils/helpers';
@@ -48,14 +47,39 @@ const CustomerDashboard = () => {
         return matchesCategory && matchesSearch;
     });
 
+    // Bookings State
+    const [bookings, setBookings] = useState([]);
+    const [bookingsLoading, setBookingsLoading] = useState(false);
+
+    // Fetch bookings when tab changes to 'bookings'
+    useEffect(() => {
+        if (activeTab === 'bookings') {
+            const fetchBookings = async () => {
+                setBookingsLoading(true);
+                try {
+                    const response = await fetch('http://localhost:5000/bookings');
+                    if (!response.ok) throw new Error('Failed to fetch bookings');
+                    const data = await response.json();
+                    // In a real app, filter by customerId. For now showing all.
+                    setBookings(data);
+                } catch (err) {
+                    console.error("Error fetching bookings:", err);
+                } finally {
+                    setBookingsLoading(false);
+                }
+            };
+            fetchBookings();
+        }
+    }, [activeTab]);
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             {/* Tabs */}
             <div className="flex space-x-1 border-b border-gray-200 mb-8">
                 <button
                     className={`pb-4 px-6 text-lg font-medium transition-all duration-200 border-b-2 ${activeTab === 'browse'
-                            ? 'border-indigo-600 text-indigo-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-indigo-600 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     onClick={() => setActiveTab('browse')}
                 >
@@ -63,8 +87,8 @@ const CustomerDashboard = () => {
                 </button>
                 <button
                     className={`pb-4 px-6 text-lg font-medium transition-all duration-200 border-b-2 ${activeTab === 'bookings'
-                            ? 'border-indigo-600 text-indigo-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-indigo-600 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                         }`}
                     onClick={() => setActiveTab('bookings')}
                 >
@@ -139,24 +163,30 @@ const CustomerDashboard = () => {
             ) : (
                 // My Bookings Tab Content
                 <div className="space-y-6">
-                    {bookings.map(booking => (
-                        <div key={booking.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                            <div className="flex flex-col md:flex-row justify-between mb-6">
-                                <div>
-                                    <div className="flex items-center mb-2">
-                                        <h3 className="text-lg font-bold text-gray-900 mr-3">{booking.service}</h3>
-                                        <BookingStatus status={booking.status} />
+                    {bookingsLoading ? (
+                        <div className="text-center py-10">Loading bookings...</div>
+                    ) : bookings.length === 0 ? (
+                        <div className="text-center py-10 text-gray-500">No bookings found.</div>
+                    ) : (
+                        bookings.map(booking => (
+                            <div key={booking.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div className="flex flex-col md:flex-row justify-between mb-6">
+                                    <div>
+                                        <div className="flex items-center mb-2">
+                                            <h3 className="text-lg font-bold text-gray-900 mr-3">{booking.service}</h3>
+                                            <BookingStatus status={booking.status} />
+                                        </div>
+                                        <p className="text-gray-500 text-sm">Booking ID: #{booking.id}</p>
                                     </div>
-                                    <p className="text-gray-500 text-sm">Booking ID: #{booking.id}</p>
+                                    <div className="mt-4 md:mt-0 text-right">
+                                        <p className="text-2xl font-bold text-indigo-600">{formatCurrency(booking.amount || 0)}</p>
+                                        <p className="text-gray-500 text-sm">{formatDate(booking.date)}</p>
+                                    </div>
                                 </div>
-                                <div className="mt-4 md:mt-0 text-right">
-                                    <p className="text-2xl font-bold text-indigo-600">{formatCurrency(booking.amount || 0)}</p>
-                                    <p className="text-gray-500 text-sm">{formatDate(booking.date)}</p>
-                                </div>
+                                <BookingTimeline status={booking.status} />
                             </div>
-                            <BookingTimeline status={booking.status} />
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             )}
         </div>

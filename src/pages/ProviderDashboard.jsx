@@ -1,33 +1,74 @@
-import React, { useState } from 'react';
-import { bookings as initialBookings } from '../data/bookings';
+import React, { useState, useEffect } from 'react';
 import { providers } from '../data/providers';
 import RequestCard from '../components/provider/RequestCard';
+import { formatDate } from '../utils/helpers';
 
 const ProviderDashboard = () => {
     // Simulate logged-in provider (ID 1: Sarah Jenkins)
     const currentProviderId = 1;
     const providerProfile = providers.find(p => p.id === currentProviderId);
 
-    // Local state to manage bookings updates
-    const [myBookings, setMyBookings] = useState(
-        initialBookings.filter(b => b.providerId === currentProviderId)
-    );
+    // State for bookings
+    const [myBookings, setMyBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch bookings on mount
+    useEffect(() => {
+        const fetchBookings = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/bookings');
+                if (response.ok) {
+                    const data = await response.json();
+                    // Filter for this provider
+                    const providerBookings = data.filter(b => b.providerId === currentProviderId);
+                    setMyBookings(providerBookings);
+                }
+            } catch (error) {
+                console.error("Failed to fetch provider bookings", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBookings();
+    }, []);
+
+    const updateBookingStatus = async (bookingId, newStatus) => {
+        try {
+            const response = await fetch(`http://localhost:5000/bookings/${bookingId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus }),
+            });
+
+            if (response.ok) {
+                // Update local state to reflect change
+                setMyBookings(prev => prev.map(booking =>
+                    booking.id === bookingId ? { ...booking, status: newStatus } : booking
+                ));
+            } else {
+                alert("Failed to update booking status");
+            }
+        } catch (error) {
+            console.error("Error updating booking:", error);
+            alert("Error connecting to server");
+        }
+    };
 
     const handleAccept = (bookingId) => {
-        setMyBookings(prev => prev.map(booking =>
-            booking.id === bookingId ? { ...booking, status: 'confirmed' } : booking
-        ));
+        updateBookingStatus(bookingId, 'confirmed');
     };
 
     const handleReject = (bookingId) => {
-        setMyBookings(prev => prev.map(booking =>
-            booking.id === bookingId ? { ...booking, status: 'cancelled' } : booking
-        ));
+        updateBookingStatus(bookingId, 'cancelled');
     };
 
     const pendingRequests = myBookings.filter(b => b.status === 'requested' || b.status === 'pending');
     const upcomingJobs = myBookings.filter(b => b.status === 'confirmed');
     const pastJobs = myBookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
+
+    if (loading) {
+        return <div className="text-center py-20">Loading your dashboard...</div>;
+    }
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
