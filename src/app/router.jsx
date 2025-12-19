@@ -5,6 +5,7 @@ import Landing from '../pages/Landing';
 import CustomerDashboard from '../pages/CustomerDashboard';
 import ProviderDashboard from '../pages/ProviderDashboard';
 import ProviderProfile from '../pages/ProviderProfile';
+import BookingDetails from '../pages/BookingDetails';
 import NotFound from '../pages/NotFound';
 
 export const router = createBrowserRouter([

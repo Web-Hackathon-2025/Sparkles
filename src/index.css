@@ -1,13 +1,47 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-html,
+@theme {
+    --color-primary: #2C475C;
+    --color-accent: #F97B27;
+    --color-bg-light: #F8F5F0;
+    --font-inter: "Inter", sans-serif;
+}
+
+:root {
+    --primary: #2C475C;
+    --accent: #F97B27;
+    --bg-light: #F8F5F0;
+}
+
 body {
+    background-color: var(--bg-light);
+    color: var(--primary);
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-    @apply bg-gray-50 text-gray-900;
+/* Custom Utilities */
+.btn-primary {
+    @apply bg-[#F97B27] hover:bg-[#e06a1f] text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-md active:scale-95 text-center;
+}
+
+.btn-secondary {
+    @apply bg-white border-2 border-[#2C475C] text-[#2C475C] hover:bg-slate-100 px-6 py-3 rounded-xl font-semibold transition-all active:scale-95 text-center;
+}
+
+.card-premium {
+    @apply bg-white rounded-2xl shadow-[0_4px_20px_rgba(0, 0, 0, 0.05)] border border-gray-100 hover:shadow-[0_8px_30px_rgba(0, 0, 0, 0.08)] transition-shadow duration-300;
+}
+
+.text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#2C475C] to-[#456b8a];
+}
+
+/* Focus styles */
+input:focus,
+select:focus,
+textarea:focus {
+    @apply outline-none ring-2 ring-[#F97B27] border-transparent;
 }

@@ -3,32 +3,28 @@ import { providers } from '../data/providers';
 import RequestCard from '../components/provider/RequestCard';
 import { formatDate, formatCurrency } from '../utils/helpers';
 import { useUser } from '../context/UserContext';
-import { TrendingUp, Users, CheckCircle, Clock } from 'lucide-react';
+import { TrendingUp, Users, CheckCircle, Clock, Wallet, Calendar, Bell, Star, ChevronRight } from 'lucide-react';
 
 const ProviderDashboard = () => {
     const { user } = useUser();
 
-    // Fallback if not logged in or in dev mode
     const currentProviderId = user?.id || 1;
     const providerProfile = providers.find(p => p.id === currentProviderId);
 
-    // State for bookings
     const [myBookings, setMyBookings] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Fetch bookings on mount
     useEffect(() => {
         const fetchBookings = async () => {
             try {
                 const response = await fetch('http://localhost:5000/bookings');
                 if (response.ok) {
                     const data = await response.json();
-                    // Filter for this provider
                     const providerBookings = data.filter(b => b.providerId === currentProviderId);
                     setMyBookings(providerBookings);
                 }
             } catch (error) {
-                console.error("Failed to fetch provider bookings", error);
+                console.error("Error:", error);
             } finally {
                 setLoading(false);
             }
@@ -45,162 +41,168 @@ const ProviderDashboard = () => {
             });
 
             if (response.ok) {
-                // Update local state to reflect change
                 setMyBookings(prev => prev.map(booking =>
                     booking.id === bookingId ? { ...booking, status: newStatus } : booking
                 ));
-            } else {
-                alert("Failed to update booking status");
             }
         } catch (error) {
-            console.error("Error updating booking:", error);
-            alert("Error connecting to server");
+            console.error("Error:", error);
         }
     };
 
-    const handleAccept = (bookingId) => {
-        updateBookingStatus(bookingId, 'confirmed');
-    };
-
-    const handleReject = (bookingId) => {
-        updateBookingStatus(bookingId, 'cancelled');
-    };
+    const handleAccept = (bookingId) => updateBookingStatus(bookingId, 'confirmed');
+    const handleReject = (bookingId) => updateBookingStatus(bookingId, 'cancelled');
 
     const pendingRequests = myBookings.filter(b => b.status === 'requested' || b.status === 'pending');
     const upcomingJobs = myBookings.filter(b => b.status === 'confirmed');
     const pastJobs = myBookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
     const completedJobs = myBookings.filter(b => b.status === 'completed');
 
-    // Calculate dynamic earnings
     const totalEarnings = completedJobs.reduce((sum, b) => sum + (b.amount || 0), 0);
 
     if (loading) {
-        return <div className="text-center py-20">Loading your dashboard...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#F8F5F0]">
+                <div className="animate-spin h-10 w-10 border-4 border-[#F97B27] border-t-transparent rounded-full"></div>
+            </div>
+        );
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">Provider Portal</h1>
-                <p className="text-gray-500 mt-2">Welcome back, {providerProfile?.name || user?.name || 'Professional'}</p>
-            </div>
-
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-500 text-sm font-medium">Earnings</span>
-                        <div className="p-2 bg-green-50 rounded-lg">
-                            <TrendingUp className="h-5 w-5 text-green-600" />
+        <div className="min-h-screen bg-[#F8F5F0] pt-24 pb-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Dashboard Banner */}
+                <div className="bg-[#2C475C] rounded-[2rem] p-8 md:p-12 text-white mb-10 relative overflow-hidden shadow-2xl shadow-[#2C475C]/20">
+                    <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div>
+                            <div className="inline-flex items-center bg-white/10 backdrop-blur-md rounded-full px-4 py-1 mb-4 border border-white/10">
+                                <span className="h-2 w-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                                <span className="text-xs font-bold uppercase tracking-wider">Online & Available</span>
+                            </div>
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                                Hello, <span className="text-[#F97B27]">{providerProfile?.name || 'Professional'}</span>
+                            </h1>
+                            <p className="text-gray-300 mt-2 text-lg font-medium italic">"Quality is the best business plan."</p>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-6 rounded-3xl text-center">
+                                <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1 tracking-widest">Total Earnings</span>
+                                <div className="text-3xl font-bold flex items-center justify-center">
+                                    <span className="text-sm mr-1 opacity-60">Pkr</span>
+                                    {totalEarnings}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div className="text-2xl font-bold text-gray-900">{formatCurrency(totalEarnings)}</div>
+                    {/* Decorative Blobs */}
+                    <div className="absolute -top-12 -right-12 w-64 h-64 bg-[#F97B27]/10 rounded-full blur-3xl"></div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-500 text-sm font-medium">Completed</span>
-                        <div className="p-2 bg-blue-50 rounded-lg">
-                            <CheckCircle className="h-5 w-5 text-blue-600" />
+                {/* Stats Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    {[
+                        { label: 'Completed Jobs', val: completedJobs.length, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50' },
+                        { label: 'Active Requests', val: pendingRequests.length, icon: Clock, color: 'text-[#F97B27]', bg: 'bg-orange-50' },
+                        { label: 'Avg Rating', val: providerProfile?.rating || '5.0', icon: Star, color: 'text-yellow-500', bg: 'bg-yellow-50' },
+                        { label: 'Total Clients', val: [...new Set(myBookings.map(b => b.customerName))].length, icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' }
+                    ].map((stat, i) => (
+                        <div key={i} className="bg-white p-6 rounded-3xl shadow-xl shadow-[#2C475C]/5 border border-gray-100 group hover:border-[#F97B27] transition-all">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-gray-400 text-xs font-bold uppercase tracking-widest">{stat.label}</span>
+                                <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color} transition-transform group-hover:scale-110`}>
+                                    <stat.icon className="h-5 w-5" />
+                                </div>
+                            </div>
+                            <div className="text-3xl font-bold text-[#2C475C]">{stat.val}</div>
                         </div>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">{completedJobs.length}</div>
+                    ))}
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-500 text-sm font-medium">Active Requests</span>
-                        <div className="p-2 bg-yellow-50 rounded-lg">
-                            <Clock className="h-5 w-5 text-yellow-600" />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">{pendingRequests.length}</div>
-                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    {/* Primary Feed */}
+                    <div className="lg:col-span-2 space-y-10">
+                        {/* New Requests Section */}
+                        <section>
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-2xl font-bold text-[#2C475C] flex items-center">
+                                    New Inbound Requests
+                                    {pendingRequests.length > 0 && (
+                                        <span className="ml-3 bg-[#F97B27] text-white text-[10px] px-2 py-1 rounded-full animate-bounce">
+                                            {pendingRequests.length} Action Required
+                                        </span>
+                                    )}
+                                </h2>
+                            </div>
+                            <div className="grid grid-cols-1 gap-6">
+                                {pendingRequests.length > 0 ? (
+                                    pendingRequests.map(booking => (
+                                        <RequestCard
+                                            key={booking.id}
+                                            booking={booking}
+                                            onAccept={handleAccept}
+                                            onReject={handleReject}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="bg-white rounded-[2rem] p-12 text-center border-2 border-dashed border-gray-200">
+                                        <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <Bell className="h-10 w-10 text-gray-300" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-gray-400">All caught up! No new requests.</h3>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-500 text-sm font-medium">Customers</span>
-                        <div className="p-2 bg-purple-50 rounded-lg">
-                            <Users className="h-5 w-5 text-purple-600" />
-                        </div>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900">
-                        {[...new Set(myBookings.map(b => b.customerName))].length}
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Incoming Requests */}
-                    <section>
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                            Incoming Requests
-                            {pendingRequests.length > 0 && (
-                                <span className="ml-3 bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">{pendingRequests.length} new</span>
-                            )}
-                        </h2>
-                        <div className="space-y-4">
-                            {pendingRequests.length > 0 ? (
-                                pendingRequests.map(booking => (
+                        {/* Confirmed Schedule section */}
+                        <section>
+                            <h2 className="text-2xl font-bold text-[#2C475C] mb-6">Confirmed Schedule</h2>
+                            <div className="grid grid-cols-1 gap-6">
+                                {upcomingJobs.map(booking => (
                                     <RequestCard
                                         key={booking.id}
                                         booking={booking}
                                         onAccept={handleAccept}
                                         onReject={handleReject}
                                     />
-                                ))
-                            ) : (
-                                <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
-                                    No new requests at the moment.
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* Upcoming Jobs */}
-                    <section>
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">Upcoming Schedule</h2>
-                        <div className="space-y-4">
-                            {upcomingJobs.length > 0 ? (
-                                upcomingJobs.map(booking => (
-                                    <RequestCard
-                                        key={booking.id}
-                                        booking={booking}
-                                        onAccept={handleAccept}
-                                        onReject={handleReject}
-                                    />
-                                ))
-                            ) : (
-                                <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500">
-                                    No upcoming jobs confirmed.
-                                </div>
-                            )}
-                        </div>
-                    </section>
-                </div>
-
-                {/* Sidebar / Stats or Past Jobs */}
-                <div className="lg:col-span-1">
-                    <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-6">
-                        <h2 className="text-lg font-bold text-gray-900 mb-4">Past Activity</h2>
-                        <div className="space-y-4">
-                            {pastJobs.map(booking => (
-                                <div key={booking.id} className="text-sm border-b border-gray-100 last:border-0 pb-3 last:pb-0">
-                                    <div className="flex justify-between font-medium">
-                                        <span className="text-gray-900">{booking.service}</span>
-                                        <span className={`capitalize ${booking.status === 'completed' ? 'text-green-600' : 'text-gray-400'}`}>{booking.status}</span>
+                                ))}
+                                {upcomingJobs.length === 0 && (
+                                    <div className="bg-white rounded-[2rem] p-8 text-center border border-gray-100 shadow-sm text-gray-400 font-medium">
+                                        Your calendar is empty for now.
                                     </div>
-                                    <div className="text-gray-500 text-xs mt-1">
-                                        {formatDate(booking.date)} • {booking.customerName}
+                                )}
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Side Sidebar - Activity & History */}
+                    <aside className="space-y-10">
+                        <section className="bg-white rounded-[2rem] p-8 shadow-xl shadow-[#2C475C]/5 border border-gray-100">
+                            <h3 className="text-xl font-bold text-[#2C475C] mb-6 flex items-center">
+                                <TrendingUp className="h-5 w-5 mr-3 text-[#F97B27]" /> Performance
+                            </h3>
+                            <div className="space-y-6">
+                                {pastJobs.slice(0, 5).map(job => (
+                                    <div key={job.id} className="flex items-center justify-between pb-4 border-b border-gray-50 last:border-0 last:pb-0 group cursor-pointer">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-2 h-2 rounded-full ${job.status === 'completed' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                            <div>
+                                                <p className="text-sm font-bold text-[#2C475C] group-hover:text-[#F97B27] transition-colors">{job.customerName}</p>
+                                                <p className="text-[10px] text-gray-400 font-medium">{formatDate(job.date)}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-sm font-bold text-[#2C475C]">
+                                            {formatCurrency(job.amount || 0)}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                            {pastJobs.length === 0 && (
-                                <p className="text-gray-400 text-sm">No past history.</p>
-                            )}
-                        </div>
-                    </section>
+                                ))}
+                                {pastJobs.length === 0 && <p className="text-gray-400 text-sm text-center">No history yet.</p>}
+                            </div>
+                            <button className="w-full mt-8 py-3 text-[#2C475C] font-bold text-sm bg-gray-50 hover:bg-[#2C475C] hover:text-white rounded-2xl transition-all">
+                                View Full History
+                            </button>
+                        </section>
+                    </aside>
                 </div>
             </div>
         </div>

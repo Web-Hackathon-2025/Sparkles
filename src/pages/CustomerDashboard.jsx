@@ -5,7 +5,7 @@ import { categories } from '../data/categories';
 import BookingStatus from '../components/customer/BookingStatus';
 import BookingTimeline from '../components/customer/BookingTimeline';
 import { formatDate, formatCurrency } from '../utils/helpers';
-import { Search, Filter, Star } from 'lucide-react';
+import { Search, Filter, Star, MapPin, Calendar, Clock, ChevronRight, Briefcase } from 'lucide-react';
 
 const CustomerDashboard = () => {
     const navigate = useNavigate();
@@ -13,7 +13,6 @@ const CustomerDashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('browse');
 
-    // Dynamic Data State
     const [providers, setProviders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -24,24 +23,19 @@ const CustomerDashboard = () => {
     });
 
     useEffect(() => {
-        // Fetch providers from backend on mount
         const fetchProviders = async () => {
-            // ... existing fetch logic
             try {
                 const response = await fetch('http://localhost:5000/providers');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch providers');
-                }
+                if (!response.ok) throw new Error('Failed to fetch providers');
                 const data = await response.json();
                 setProviders(data);
                 setLoading(false);
             } catch (err) {
-                console.error('Error loading providers:', err);
-                setError('Failed to load providers. Please ensure the backend is running.');
+                console.error('Error:', err);
+                setError('Unable to load experts at the moment.');
                 setLoading(false);
             }
         };
-
         fetchProviders();
     }, []);
 
@@ -52,26 +46,23 @@ const CustomerDashboard = () => {
             p.category.toLowerCase().includes(searchQuery.toLowerCase());
 
         let matchesRating = true;
-        if (filters.rating) {
-            matchesRating = p.rating >= filters.rating;
-        }
+        if (filters.rating) matchesRating = p.rating >= filters.rating;
 
         let matchesPrice = true;
         if (filters.price !== 'all') {
-            const price = p.hourlyRate || 0;
-            if (filters.price === 'low') matchesPrice = price < 50;
-            if (filters.price === 'mid') matchesPrice = price >= 50 && price <= 100;
-            if (filters.price === 'high') matchesPrice = price > 100;
+            const priceStr = p.pricing || '';
+            const price = parseInt(priceStr.replace(/[^0-9]/g, '')) || 0;
+            if (filters.price === 'low') matchesPrice = price < 500;
+            if (filters.price === 'mid') matchesPrice = price >= 500 && price <= 1000;
+            if (filters.price === 'high') matchesPrice = price > 1000;
         }
 
         return matchesCategory && matchesSearch && matchesRating && matchesPrice;
     });
 
-    // Bookings State
     const [bookings, setBookings] = useState([]);
     const [bookingsLoading, setBookingsLoading] = useState(false);
 
-    // Fetch bookings when tab changes to 'bookings'
     useEffect(() => {
         if (activeTab === 'bookings') {
             const fetchBookings = async () => {
@@ -80,10 +71,9 @@ const CustomerDashboard = () => {
                     const response = await fetch('http://localhost:5000/bookings');
                     if (!response.ok) throw new Error('Failed to fetch bookings');
                     const data = await response.json();
-                    // In a real app, filter by customerId. For now showing all.
                     setBookings(data);
                 } catch (err) {
-                    console.error("Error fetching bookings:", err);
+                    console.error("Error:", err);
                 } finally {
                     setBookingsLoading(false);
                 }
@@ -93,211 +83,209 @@ const CustomerDashboard = () => {
     }, [activeTab]);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            {/* Tabs */}
-            <div className="flex space-x-1 border-b border-gray-200 mb-8">
-                <button
-                    className={`pb-4 px-6 text-lg font-medium transition-all duration-200 border-b-2 ${activeTab === 'browse'
-                        ? 'border-indigo-600 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    onClick={() => setActiveTab('browse')}
-                >
-                    Find a Professional
-                </button>
-                <button
-                    className={`pb-4 px-6 text-lg font-medium transition-all duration-200 border-b-2 ${activeTab === 'bookings'
-                        ? 'border-indigo-600 text-indigo-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                    onClick={() => setActiveTab('bookings')}
-                >
-                    My Bookings
-                </button>
+        <div className="min-h-screen bg-[#F8F5F0]">
+            {/* Dashboard Header */}
+            <div className="bg-[#2C475C] text-white pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+                        <div>
+                            <h1 className="text-4xl font-bold tracking-tight">Expert Marketplace</h1>
+                            <p className="text-gray-300 mt-2 text-lg">Find and hire the best local talent in seconds.</p>
+                        </div>
+                        <div className="flex bg-white/10 backdrop-blur-md p-1 rounded-2xl border border-white/20">
+                            <button
+                                onClick={() => setActiveTab('browse')}
+                                className={`px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'browse' ? 'bg-[#F97B27] text-white shadow-lg' : 'text-white/80 hover:text-white'}`}
+                            >
+                                Browse Pros
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('bookings')}
+                                className={`px-6 py-2.5 rounded-xl font-bold transition-all ${activeTab === 'bookings' ? 'bg-[#F97B27] text-white shadow-lg' : 'text-white/80 hover:text-white'}`}
+                            >
+                                My Requests
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {activeTab === 'browse' ? (
-                <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Filters Sidebar */}
-                    <div className="w-full lg:w-64 flex-shrink-0">
-                        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-4">
-                            <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-                                <Filter className="h-4 w-4 mr-2" /> Filters
-                            </h3>
-
-                            {/* Category Filter */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                                <select
-                                    value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                    <option value="All">All Categories</option>
-                                    {categories.map(cat => (
-                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Rating Filter */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-                                <div className="space-y-2">
-                                    {[4, 3].map((star) => (
-                                        <label key={star} className="flex items-center">
-                                            <input
-                                                type="checkbox"
-                                                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                                                checked={filters.rating === star}
-                                                onChange={() => setFilters({ ...filters, rating: filters.rating === star ? null : star })}
-                                            />
-                                            <span className="ml-2 text-sm text-gray-600 flex items-center">
-                                                {star}+ Stars <Star className="h-3 w-3 text-yellow-400 fill-current ml-1" />
-                                            </span>
-                                        </label>
-                                    ))}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 pb-20">
+                {activeTab === 'browse' ? (
+                    <div className="flex flex-col lg:flex-row gap-8">
+                        {/* Sidebar Filters */}
+                        <aside className="w-full lg:w-72 flex-shrink-0">
+                            <div className="bg-white rounded-3xl p-8 shadow-xl shadow-[#2C475C]/5 border border-gray-100 sticky top-24">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h3 className="text-xl font-bold text-[#2C475C]">Filters</h3>
+                                    <Filter className="h-5 w-5 text-[#F97B27]" />
                                 </div>
-                            </div>
 
-                            {/* Price Filter */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Hourly Rate</label>
-                                <div className="space-y-2">
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="price"
-                                            className="border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                                            checked={filters.price === 'all'}
-                                            onChange={() => setFilters({ ...filters, price: 'all' })}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600">Any Price</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="price"
-                                            className="border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                                            checked={filters.price === 'low'}
-                                            onChange={() => setFilters({ ...filters, price: 'low' })}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600">Under $50</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="price"
-                                            className="border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                                            checked={filters.price === 'mid'}
-                                            onChange={() => setFilters({ ...filters, price: 'mid' })}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600">$50 - $100</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="price"
-                                            className="border-gray-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-                                            checked={filters.price === 'high'}
-                                            onChange={() => setFilters({ ...filters, price: 'high' })}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600">$100+</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Main Content Area */}
-                    <div className="flex-1">
-                        {/* Search Bar */}
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                                <input
-                                    type="text"
-                                    placeholder="Search professionals by name, location, or service..."
-                                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Results Grid */}
-                        <div className="min-h-[500px]">
-                            {loading ? (
-                                <div className="flex flex-col items-center justify-center py-20">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-                                    <p className="text-gray-500">Finding best professionals...</p>
-                                </div>
-                            ) : error ? (
-                                <div className="text-center py-20 bg-white rounded-xl">
-                                    <div className="text-red-500 text-lg font-medium mb-2">{error}</div>
-                                    <button className="text-indigo-600 hover:text-indigo-800 underline" onClick={() => window.location.reload()}>Retry</button>
-                                </div>
-                            ) : filteredProviders.length > 0 ? (
-                                <ProviderList
-                                    providers={filteredProviders}
-                                    onBookProvider={(provider) => navigate(`/provider/${provider.id}`)}
-                                />
-                            ) : (
-                                <div className="text-center py-20 bg-white rounded-xl">
-                                    <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                                        <Search className="h-10 w-10 text-gray-400" />
-                                    </div>
-                                    <h3 className="text-lg font-medium text-gray-900">No professionals found</h3>
-                                    <p className="text-gray-500 mt-2">Try adjusting your filters or search query.</p>
-                                    <button
-                                        onClick={() => {
-                                            setSearchQuery('');
-                                            setSelectedCategory('All');
-                                            setFilters({ rating: null, price: 'all' });
-                                        }}
-                                        className="mt-4 text-indigo-600 font-medium hover:text-indigo-800 underline"
-                                    >
-                                        Clear All Filters
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                // My Bookings Tab Content
-                <div className="space-y-6">
-                    {bookingsLoading ? (
-                        <div className="text-center py-10">Loading bookings...</div>
-                    ) : bookings.length === 0 ? (
-                        <div className="text-center py-10 text-gray-500">No bookings found.</div>
-                    ) : (
-                        bookings.map(booking => (
-                            <div key={booking.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                                <div className="flex flex-col md:flex-row justify-between mb-6">
+                                <div className="space-y-8">
+                                    {/* Category */}
                                     <div>
-                                        <div className="flex items-center mb-2">
-                                            <button
-                                                onClick={() => navigate(`/provider/${booking.providerId}`)}
-                                                className="text-lg font-bold text-gray-900 mr-3 hover:text-indigo-600 transition-colors"
-                                            >
-                                                {booking.service}
-                                            </button>
-                                            <BookingStatus status={booking.status} />
+                                        <label className="block text-sm font-bold text-[#2C475C] mb-3">Service Type</label>
+                                        <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                                            {['All', ...categories.map(c => c.name)].map(cat => (
+                                                <button
+                                                    key={cat}
+                                                    onClick={() => setSelectedCategory(cat)}
+                                                    className={`w-full text-left px-4 py-2 rounded-xl text-sm font-semibold transition-all ${selectedCategory === cat ? 'bg-orange-50 text-[#F97B27] border border-[#F97B27]/20' : 'text-gray-500 hover:bg-gray-50'}`}
+                                                >
+                                                    {cat}
+                                                </button>
+                                            ))}
                                         </div>
-                                        <p className="text-gray-500 text-sm">Booking ID: #{booking.id}</p>
                                     </div>
-                                    <div className="mt-4 md:mt-0 text-right">
-                                        <p className="text-2xl font-bold text-indigo-600">{formatCurrency(booking.amount || 0)}</p>
-                                        <p className="text-gray-500 text-sm">{formatDate(booking.date)}</p>
+
+                                    {/* Rating */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-[#2C475C] mb-3">Min Rating</label>
+                                        <div className="flex justify-between gap-2">
+                                            {[3, 4, 4.5].map(r => (
+                                                <button
+                                                    key={r}
+                                                    onClick={() => setFilters({ ...filters, rating: filters.rating === r ? null : r })}
+                                                    className={`flex-1 py-2 rounded-xl text-xs font-bold border-2 transition-all ${filters.rating === r ? 'border-[#F97B27] bg-orange-50 text-[#F97B27]' : 'border-gray-100 text-gray-400'}`}
+                                                >
+                                                    {r}+ ⭐
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Price */}
+                                    <div>
+                                        <label className="block text-sm font-bold text-[#2C475C] mb-3">Budget (Pkr)</label>
+                                        <div className="space-y-3">
+                                            {[
+                                                { id: 'all', label: 'Any Price' },
+                                                { id: 'low', label: 'Under 500' },
+                                                { id: 'mid', label: '500 - 1000' },
+                                                { id: 'high', label: 'Above 1000' }
+                                            ].map(opt => (
+                                                <button
+                                                    key={opt.id}
+                                                    onClick={() => setFilters({ ...filters, price: opt.id })}
+                                                    className={`w-full flex items-center gap-3 group`}
+                                                >
+                                                    <div className={`w-5 h-5 rounded-md border-2 transition-all flex items-center justify-center ${filters.price === opt.id ? 'border-[#F97B27] bg-[#F97B27]' : 'border-gray-200 group-hover:border-[#F97B27]'}`}>
+                                                        {filters.price === opt.id && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                                    </div>
+                                                    <span className={`text-sm font-bold ${filters.price === opt.id ? 'text-[#2C475C]' : 'text-gray-400'}`}>{opt.label}</span>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                                <BookingTimeline status={booking.status} />
+
+                                <button
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setSelectedCategory('All');
+                                        setFilters({ rating: null, price: 'all' });
+                                    }}
+                                    className="w-full mt-10 py-3 text-sm font-bold text-[#F97B27] border-2 border-[#F97B27] rounded-2xl hover:bg-[#F97B27] hover:text-white transition-all"
+                                >
+                                    Reset All
+                                </button>
                             </div>
-                        ))
-                    )}
-                </div>
-            )}
+                        </aside>
+
+                        {/* Main Stream */}
+                        <main className="flex-1">
+                            {/* Top Bar with Search */}
+                            <div className="bg-white rounded-3xl p-4 shadow-xl shadow-[#2C475C]/5 border border-gray-100 flex items-center gap-4 mb-8">
+                                <div className="flex-1 relative">
+                                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name, profession, or city..."
+                                        className="w-full pl-14 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-[#F97B27] transition-all font-medium text-[#2C475C]"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Providers Grid */}
+                            <div className="space-y-8">
+                                {loading ? (
+                                    <div className="py-20 text-center">
+                                        <div className="animate-spin h-12 w-12 border-4 border-[#F97B27] border-t-transparent rounded-full mx-auto mb-4"></div>
+                                        <p className="text-gray-500 font-bold">Curating top experts...</p>
+                                    </div>
+                                ) : filteredProviders.length > 0 ? (
+                                    <ProviderList
+                                        providers={filteredProviders}
+                                        onBookProvider={(provider) => navigate(`/provider/${provider.id}`)}
+                                    />
+                                ) : (
+                                    <div className="py-24 text-center bg-white rounded-3xl border border-gray-100 shadow-sm">
+                                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                            <Search className="h-10 w-10 text-gray-300" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-[#2C475C]">No results found</h3>
+                                        <p className="text-gray-500 mt-2">Adjust your filters to see more professionals.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </main>
+                    </div>
+                ) : (
+                    /* My Bookings List */
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+                        {bookingsLoading ? (
+                            <div className="col-span-full py-20 text-center">Loading your history...</div>
+                        ) : bookings.length === 0 ? (
+                            <div className="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-300">
+                                <Calendar className="h-16 w-16 text-gray-200 mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-gray-400">No active bookings yet</h3>
+                                <button onClick={() => setActiveTab('browse')} className="mt-4 text-[#F97B27] font-bold underline">Start Browsing</button>
+                            </div>
+                        ) : (
+                            bookings.map(booking => (
+                                <Link
+                                    to={`/booking/${booking.id}`}
+                                    key={booking.id}
+                                    className="group bg-white p-8 rounded-[2.5rem] shadow-xl border border-transparent hover:border-[#F97B27]/30 transition-all duration-500 overflow-hidden relative"
+                                >
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#F97B27]/5 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-[#F97B27]/10 transition-colors"></div>
+
+                                    <div className="flex justify-between items-start mb-8 relative z-10">
+                                        <div className="flex gap-5">
+                                            <div className="h-16 w-16 bg-[#F8F5F0] rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                                <Briefcase className="h-8 w-8 text-[#2C475C]/40 group-hover:text-[#F97B27] transition-colors" />
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase text-[#2C475C]/30 tracking-widest mb-1">Assigned Service</p>
+                                                <h4 className="text-xl font-bold text-[#2C475C] group-hover:text-[#F97B27] transition-colors">{booking.service}</h4>
+                                                <p className="text-sm font-medium text-[#2C475C]/60 flex items-center gap-1 mt-1">
+                                                    with {booking.providerName || "Assigned Expert"}
+                                                    <CheckCircle className="h-3 w-3 text-green-500" />
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <BookingStatus status={booking.status} />
+                                    </div>
+
+                                    <div className="flex items-center justify-between pt-6 border-t border-[#2C475C]/5 relative z-10">
+                                        <div className="flex items-center gap-6">
+                                            <div className="flex items-center text-[#2C475C]/60 text-sm font-medium">
+                                                <Calendar className="h-4 w-4 mr-2 text-[#F97B27]" />
+                                                {formatDate(booking.date)}
+                                            </div>
+                                        </div>
+                                        <div className="text-[#F97B27] opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition-all duration-500 font-black text-xs tracking-widest uppercase flex items-center gap-2">
+                                            Manage Intel <ArrowRight className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

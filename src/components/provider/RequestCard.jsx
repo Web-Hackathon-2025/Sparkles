@@ -2,47 +2,71 @@ import React from 'react';
 import Button from '../common/Button';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 import BookingStatus from '../customer/BookingStatus';
+import { User, MapPin, Calendar, Clock, ChevronRight } from 'lucide-react';
 
 const RequestCard = ({ booking, onAccept, onReject }) => {
     const isPending = booking.status === 'requested' || booking.status === 'pending';
+    const isConfirmed = booking.status === 'confirmed';
 
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start">
-                <div>
-                    <h3 className="text-lg font-bold text-gray-900">{booking.service}</h3>
-                    <p className="text-gray-500 text-sm mt-1">Customer: <span className="font-medium text-gray-900">{booking.customerName}</span></p>
-                    <div className="flex items-center mt-2 text-sm text-gray-500">
-                        <span className="mr-4">📅 {formatDate(booking.date)}</span>
-                        <span>💰 {formatCurrency(booking.amount)}</span>
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-[#2C475C]/5 border border-gray-50 p-6 md:p-8 hover:border-[#F97B27]/30 transition-all group">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex gap-4 items-center">
+                    <div className="h-16 w-16 bg-[#2C475C]/5 rounded-2xl flex items-center justify-center shrink-0">
+                        <User className="h-8 w-8 text-[#2C475C]" />
+                    </div>
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-xl font-bold text-[#2C475C]">{booking.service}</h3>
+                            <BookingStatus status={booking.status} />
+                        </div>
+                        <p className="text-gray-400 text-sm font-bold uppercase tracking-tight">Customer: <span className="text-[#2C475C]">{booking.customerName}</span></p>
                     </div>
                 </div>
-                <BookingStatus status={booking.status} />
+
+                <div className="flex flex-wrap md:flex-nowrap gap-4 items-center bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                    <div className="flex items-center px-4 py-2 bg-white rounded-xl shadow-sm">
+                        <Calendar className="h-4 w-4 text-[#F97B27] mr-2" />
+                        <span className="text-sm font-bold text-[#2C475C] whitespace-nowrap">{formatDate(booking.date)}</span>
+                    </div>
+                    <div className="flex items-center px-4 py-2 bg-white rounded-xl shadow-sm">
+                        <Clock className="h-4 w-4 text-[#F97B27] mr-2" />
+                        <span className="text-sm font-bold text-[#2C475C] whitespace-nowrap">{formatCurrency(booking.amount || 0)}</span>
+                    </div>
+                </div>
             </div>
 
             {isPending && (
-                <div className="mt-6 flex space-x-3 border-t border-gray-100 pt-4">
-                    <Button
-                        size="sm"
+                <div className="mt-8 flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-50">
+                    <button
                         onClick={() => onAccept(booking.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white flex-1 justify-center"
+                        className="btn-primary flex-1 py-4 text-sm font-bold shadow-lg shadow-[#F97B27]/20 flex items-center justify-center group/btn"
                     >
-                        Accept Request
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant="ghost"
+                        Accept and Confirm
+                        <ChevronRight className="ml-2 h-4 w-4 transform group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                    <button
                         onClick={() => onReject(booking.id)}
-                        className="text-red-600 hover:text-red-800 hover:bg-red-50 flex-1 justify-center"
+                        className="btn-secondary flex-1 py-4 text-sm font-bold bg-white text-gray-400 border-gray-100 hover:text-red-500 hover:border-red-100 hover:bg-red-50"
                     >
-                        Reject
-                    </Button>
+                        Decline
+                    </button>
                 </div>
             )}
 
-            {!isPending && booking.status === 'confirmed' && (
-                <div className="mt-6 border-t border-gray-100 pt-4 text-center text-sm text-green-600 font-medium">
-                    Running schedule
+            {isAccepted && (
+                <div className="px-6 py-6 bg-[#F8F5F0]/50 border-t border-[#2C475C]/5">
+                    <div className="flex gap-4">
+                        <Link
+                            to={`/booking/${booking.id}`}
+                            className="btn-primary flex-1 py-3 text-sm flex items-center justify-center gap-2"
+                        >
+                            <MessageSquare className="h-4 w-4" /> Open Terminal
+                        </Link>
+                        <button className="btn-secondary flex-1 py-3 text-sm">
+                            Mark Success
+                        </button>
+                    </div>
                 </div>
             )}
         </div>
