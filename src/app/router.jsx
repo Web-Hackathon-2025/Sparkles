@@ -18,11 +18,11 @@ export const router = createBrowserRouter([
                 element: <Landing />,
             },
             {
-                path: '/dashboard',
+                path: '/customer',
                 element: <CustomerDashboard />,
             },
             {
-                path: '/provider/dashboard',
+                path: '/provider',
                 element: <ProviderDashboard />,
             },
             {
