@@ -1,0 +1,103 @@
+############################
+# Logs
+############################
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+############################
+# Runtime data
+############################
+pids
+*.pid
+*.seed
+*.pid.lock
+
+############################
+# Dependency directories
+############################
+node_modules/
+jspm_packages/
+
+############################
+# Build output
+############################
+build/
+dist/
+dist-ssr/
+
+############################
+# Environment variables
+############################
+.env
+.env.*
+.env.*.local
+*.local
+
+############################
+# Python / Backend
+############################
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+.python-version
+
+# Flask specific
+instance/
+.webassets-cache
+
+############################
+# Editor directories and files
+############################
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*.swn
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+############################
+# Operating system files
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# Testing
+############################
+coverage/
+*.lcov
+.pytest_cache/
+
+############################
+# Lint and formatting cache
+############################
+.eslintcache
+.prettierignore
+.prettiercache
+
+############################
+# React Native / Expo
+############################
+*.expo
+.expo-shared/
+
+############################
+# Temporary files
+############################
+*.tmp
+*.temp
