@@ -35,11 +35,10 @@ const ProviderCard = ({ provider, onBook }) => {
 
                     <div className="mt-6 flex items-center justify-between">
                         <div className="text-lg font-bold text-gray-900">
-                            {formatCurrency(provider.hourlyRate)}
-                            <span className="text-sm text-gray-500 font-normal">/hr</span>
+                            {provider.pricing}
                         </div>
                         <Button onClick={() => onBook(provider)} size="sm">
-                            Book Now
+                            View Profile
                         </Button>
                     </div>
                 </div>
