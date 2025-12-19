@@ -5,4 +5,6 @@ export const categories = [
     { id: 4, name: 'Moving', icon: 'Truck' },
     { id: 5, name: 'Painting', icon: 'PaintBucket' },
     { id: 6, name: 'Gardening', icon: 'Flower' },
+    { id: 7, name: 'Tutor', icon: 'BookOpen' },
+    { id: 8, name: 'Carpentry', icon: 'Hammer' }
 ];
