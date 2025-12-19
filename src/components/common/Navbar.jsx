@@ -26,25 +26,27 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="bg-white shadow-sm border-b border-gray-100">
+            <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16">
-                        <div className="flex">
-                            <Link to="/" className="flex-shrink-0 flex items-center">
-                                <Sparkles className="h-8 w-8 text-indigo-600" />
-                                <span className="ml-2 text-xl font-bold text-gray-900">Karigar</span>
+                    <div className="flex justify-between h-20">
+                        <div className="flex items-center">
+                            <Link to="/" className="flex flex-shrink-0 items-center space-x-2 group">
+                                <div className="bg-[#2C475C] p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
+                                    <Sparkles className="h-6 w-6 text-white" />
+                                </div>
+                                <span className="text-2xl font-black text-[#2C475C] tracking-tighter">Karigar</span>
                             </Link>
-                            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <div className="hidden sm:ml-10 sm:flex sm:space-x-8">
                                 <Link
                                     to="/"
-                                    className={`${isActive('/') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                                    className={`${isActive('/') ? 'text-[#F97B27]' : 'text-[#2C475C] hover:text-[#F97B27]'} inline-flex items-center px-1 pt-1 text-sm font-bold transition-colors`}
                                 >
-                                    Home
+                                    Universe
                                 </Link>
                                 {user && role === ROLES.CUSTOMER && (
                                     <Link
                                         to="/customer"
-                                        className={`${isActive('/customer') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                                        className={`${isActive('/customer') ? 'text-[#F97B27]' : 'text-[#2C475C] hover:text-[#F97B27]'} inline-flex items-center px-1 pt-1 text-sm font-bold transition-colors`}
                                     >
                                         My Dashboard
                                     </Link>
@@ -52,43 +54,52 @@ const Navbar = () => {
                                 {user && role === ROLES.PROVIDER && (
                                     <Link
                                         to="/provider"
-                                        className={`${isActive('/provider') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium`}
+                                        className={`${isActive('/provider') ? 'text-[#F97B27]' : 'text-[#2C475C] hover:text-[#F97B27]'} inline-flex items-center px-1 pt-1 text-sm font-bold transition-colors`}
                                     >
-                                        Provider Portal
+                                        Control Center
                                     </Link>
                                 )}
                             </div>
                         </div>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-6">
                             {user ? (
                                 <>
-                                    <div className="hidden md:flex items-center text-sm font-medium text-gray-700 mr-2">
-                                        Hello, {user.name} ({role})
+                                    <div className="hidden md:flex flex-col items-end mr-2">
+                                        <span className="text-[10px] font-black uppercase text-[#2C475C]/40 tracking-widest">Active Operator</span>
+                                        <span className="text-[#2C475C] font-bold text-sm">{user.name}</span>
                                     </div>
-                                    <Button variant="ghost" size="sm">
-                                        <Bell className="h-5 w-5" />
+                                    <Button variant="ghost" size="sm" className="relative group">
+                                        <Bell className="h-5 w-5 text-[#2C1C1C]" />
+                                        <span className="absolute top-1 right-1 h-2 w-2 bg-[#F97B27] rounded-full border-2 border-white"></span>
                                     </Button>
-                                    <Button variant="ghost" size="sm" onClick={handleLogout} title="Logout">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="h-10 w-10 flex items-center justify-center rounded-xl bg-[#2C475C]/5 text-[#2C475C] hover:bg-red-50 hover:text-red-500 transition-all duration-300"
+                                        title="Terminate Session"
+                                    >
                                         <LogOut className="h-5 w-5" />
-                                    </Button>
+                                    </button>
                                 </>
                             ) : (
-                                <div className="flex space-x-4">
+                                <div className="flex items-center space-x-6">
                                     <button
                                         onClick={() => setShowLogin(true)}
-                                        className="text-gray-500 hover:text-gray-900 font-medium text-sm transition-colors"
+                                        className="text-[#2C475C] font-bold text-sm hover:text-[#F97B27] transition-colors"
                                     >
                                         Sign In
                                     </button>
                                     <Button
                                         size="sm"
+                                        className="bg-[#2C475C] text-white hover:bg-[#F97B27] px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-[#2C475C]/10"
                                         onClick={() => {
-                                            // Ideally scroll to Get Started or trigger onboarding from here if on landing
-                                            // For now, simpler to just let them click Get Started on hero
-                                            window.location.href = "/";
+                                            if (location.pathname !== '/') {
+                                                navigate('/');
+                                            } else {
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }
                                         }}
                                     >
-                                        Get Started
+                                        Join Karigar
                                     </Button>
                                 </div>
                             )}

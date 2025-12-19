@@ -1,8 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../common/Button';
 import { formatDate, formatCurrency } from '../../utils/helpers';
 import BookingStatus from '../customer/BookingStatus';
-import { User, MapPin, Calendar, Clock, ChevronRight } from 'lucide-react';
+import { User, MapPin, Calendar, Clock, ChevronRight, MessageSquare } from 'lucide-react';
 
 const RequestCard = ({ booking, onAccept, onReject }) => {
     const isPending = booking.status === 'requested' || booking.status === 'pending';
@@ -54,19 +55,17 @@ const RequestCard = ({ booking, onAccept, onReject }) => {
                 </div>
             )}
 
-            {isAccepted && (
-                <div className="px-6 py-6 bg-[#F8F5F0]/50 border-t border-[#2C475C]/5">
-                    <div className="flex gap-4">
-                        <Link
-                            to={`/booking/${booking.id}`}
-                            className="btn-primary flex-1 py-3 text-sm flex items-center justify-center gap-2"
-                        >
-                            <MessageSquare className="h-4 w-4" /> Open Terminal
-                        </Link>
-                        <button className="btn-secondary flex-1 py-3 text-sm">
-                            Mark Success
-                        </button>
-                    </div>
+            {isConfirmed && (
+                <div className="mt-8 flex gap-4 pt-6 border-t border-gray-50">
+                    <Link
+                        to={`/booking/${booking.id}`}
+                        className="btn-primary flex-1 py-3 text-sm flex items-center justify-center gap-2"
+                    >
+                        <MessageSquare className="h-4 w-4" /> Open Terminal
+                    </Link>
+                    <button className="btn-secondary flex-1 py-3 text-sm">
+                        Mark Success
+                    </button>
                 </div>
             )}
         </div>

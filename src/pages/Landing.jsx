@@ -4,38 +4,16 @@ import { Search, Shield, Tag, Lock, Star, CheckCircle, ArrowRight, MapPin, Users
 import Button from '../components/common/Button';
 import { categories } from '../data/categories';
 import { useUser } from '../context/UserContext';
-import LoginModal from '../components/auth/LoginModal';
 import OnboardingModal from '../components/auth/OnboardingModal';
 
 const Landing = () => {
     const navigate = useNavigate();
     const { login, role, ROLES } = useUser();
     const [showOnboarding, setShowOnboarding] = useState(false);
-    const [showLogin, setShowLogin] = useState(false);
 
     return (
         <div className="flex flex-col min-h-screen bg-[#F8F5F0] font-inter">
-            {/* Header / Nav Placeholder */}
-            <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                    <div className="flex items-center space-x-2">
-                        <div className="bg-[#2C475C] p-2 rounded-lg">
-                            <Briefcase className="h-6 w-6 text-white" />
-                        </div>
-                        <span className="text-2xl font-bold text-[#2C475C] tracking-tighter">Karigar</span>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                        <button onClick={() => setShowLogin(true)} className="text-[#2C475C] font-semibold hover:text-[#F97B27] transition-colors">
-                            Sign In
-                        </button>
-                        <button onClick={() => setShowOnboarding(true)} className="btn-primary py-2 px-6">
-                            Join Now
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            {/* Hero Section */}
+            {/* Main Content Area */}
             <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="flex flex-col lg:flex-row items-center gap-16">
@@ -162,66 +140,12 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* Footer */}
-            <footer className="bg-[#2C475C] text-[#F8F5F0] py-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                        <div className="col-span-1 md:col-span-2">
-                            <div className="flex items-center space-x-2 mb-6">
-                                <Briefcase className="h-8 w-8 text-[#F97B27]" />
-                                <span className="text-3xl font-bold tracking-tighter">Karigar</span>
-                            </div>
-                            <p className="text-gray-300 max-w-sm leading-relaxed mb-8">
-                                Redefining local service standards with trust, reliability, and expertise. Join the Pakistan's largest professional network.
-                            </p>
-                            <div className="flex space-x-4">
-                                {/* Socials placeholders */}
-                                {[1, 2, 3].map(i => <div key={i} className="w-10 h-10 rounded-full bg-white/10 hover:bg-[#F97B27] transition-colors cursor-pointer"></div>)}
-                            </div>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-bold mb-6">Quick Links</h4>
-                            <ul className="space-y-4">
-                                {['About Us', 'Find a Pro', 'Join as Pro', 'Help Center'].map(link => (
-                                    <li key={link}><a href="#" className="text-gray-400 hover:text-white transition">{link}</a></li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-bold mb-6">Contact</h4>
-                            <ul className="space-y-4 text-gray-400">
-                                <li className="flex items-center"><MapPin className="w-4 h-4 mr-2" /> Karachi, Pakistan</li>
-                                <li className="flex items-center">support@karigar.com</li>
-                                <li className="flex items-center">+92 (300) 1234567</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm">
-                        <p>&copy; 2025 Karigar Inc. All rights reserved.</p>
-                        <div className="flex space-x-6 mt-4 md:mt-0">
-                            <a href="#" className="hover:text-white">Privacy</a>
-                            <a href="#" className="hover:text-white">Terms</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-
             <OnboardingModal
                 isOpen={showOnboarding}
                 onClose={() => setShowOnboarding(false)}
                 onComplete={(userData) => {
                     login(userData);
                     setShowOnboarding(false);
-                    navigate(userData.role === ROLES.PROVIDER ? '/provider' : '/customer');
-                }}
-            />
-
-            <LoginModal
-                isOpen={showLogin}
-                onClose={() => setShowLogin(false)}
-                onLogin={(userData) => {
-                    login(userData);
-                    setShowLogin(false);
                     navigate(userData.role === ROLES.PROVIDER ? '/provider' : '/customer');
                 }}
             />

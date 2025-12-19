@@ -69,7 +69,7 @@ const ProviderDashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#F8F5F0] pt-24 pb-12">
+        <div className="min-h-screen bg-[#F8F5F0] pt-32 pb-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Dashboard Banner */}
                 <div className="bg-[#2C475C] rounded-[2rem] p-8 md:p-12 text-white mb-10 relative overflow-hidden shadow-2xl shadow-[#2C475C]/20">

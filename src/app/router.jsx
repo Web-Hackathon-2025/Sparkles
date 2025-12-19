@@ -31,6 +31,10 @@ export const router = createBrowserRouter([
                 element: <ProviderProfile />,
             },
             {
+                path: '/booking/:id',
+                element: <BookingDetails />,
+            },
+            {
                 path: '*',
                 element: <NotFound />,
             },
