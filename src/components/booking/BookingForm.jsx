@@ -2,70 +2,76 @@ import React, { useState } from 'react';
 import Button from '../common/Button';
 
 const BookingForm = ({ provider, onSubmit, onCancel }) => {
-    const [formData, setFormData] = useState({
-        date: '',
-        time: '',
-        description: '',
-        address: '',
-    });
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('');
+    const [error, setError] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ ...formData, providerId: provider.id });
-    };
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (!description || !date) {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        onSubmit({
+            providerId: provider.id,
+            service: description,
+            date: date,
+            status: 'requested',
+            amount: provider.hourlyRate * 2 // Mock estimation
+        });
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-auto">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900">Book {provider.name}</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Date</label>
+        <div className="bg-white p-6 rounded-lg shadow-lg border border-indigo-100">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Book {provider.name}</h3>
+
+            {error && (
+                <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">
+                    {error}
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Service Description
+                    </label>
+                    <textarea
+                        className="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        rows="3"
+                        placeholder="Describe what you need help with..."
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </div>
+
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Preferred Date
+                    </label>
                     <input
                         type="date"
-                        name="date"
-                        required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
                     />
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Time</label>
-                    <input
-                        type="time"
-                        name="time"
-                        required
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Service Address</label>
-                    <input
-                        type="text"
-                        name="address"
-                        required
-                        placeholder="123 Main St"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                        onChange={handleChange}
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea
-                        name="description"
-                        rows={3}
-                        placeholder="Describe the job details..."
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2 border"
-                        onChange={handleChange}
-                    ></textarea>
-                </div>
-                <div className="flex justify-end space-x-3 mt-6">
-                    <Button variant="secondary" onClick={onCancel}>Cancel</Button>
-                    <Button type="submit">Confirm Booking</Button>
+
+                <div className="flex space-x-3">
+                    <Button type="submit" className="flex-1 justify-center">
+                        Confirm Booking
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={onCancel}
+                        className="flex-1 justify-center"
+                    >
+                        Cancel
+                    </Button>
                 </div>
             </form>
         </div>
