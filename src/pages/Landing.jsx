@@ -5,10 +5,12 @@ import Button from '../components/common/Button';
 import ProviderCard from '../components/customer/ProviderCard';
 import { categories } from '../data/categories';
 import { providers } from '../data/providers';
+import { useRole } from '../hooks/useRole';
 
 const Landing = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
+    const { currentRole, ROLES } = useRole();
 
     const featuredProviders = providers.slice(0, 3);
 
@@ -20,6 +22,12 @@ const Landing = () => {
 
     return (
         <div className="flex flex-col min-h-screen">
+            {/* Visual Role Indicator */}
+            <div className={`py-2 text-center text-xs font-bold uppercase tracking-wider ${currentRole === ROLES.PROVIDER ? 'bg-indigo-900 text-indigo-100' : 'bg-blue-900 text-blue-100'
+                }`}>
+                Current View: Karigar {currentRole}
+            </div>
+
             {/* Hero Section */}
             <section className="bg-indigo-600 text-white py-20">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

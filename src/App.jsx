@@ -10,7 +10,7 @@ function App() {
         <h1 className="text-3xl font-bold text-emerald-400 mb-4 tracking-tight">
           Vite + React + Three.js + Tailwind
         </h1>
-        
+
         <div className="mb-6">
           <button
             className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded transition-colors"
@@ -19,7 +19,7 @@ function App() {
             count is {count}
           </button>
         </div>
-        
+
         <div className="text-sm text-slate-400 space-y-1 font-mono">
           <p>Vite: 6.3.5</p>
           <p>Tailwind CSS: 4.1.10</p>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sparkles, message-square, Bell, User } from 'lucide-react'; // Example icons
+import { Sparkles, MessageSquare, Bell, User } from 'lucide-react'; // Example icons
 import { useRole } from '../../hooks/useRole';
 import Button from './Button';
 
@@ -49,8 +49,8 @@ const Navbar = () => {
                             <button
                                 onClick={() => switchRole(ROLES.CUSTOMER)}
                                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${currentRole === ROLES.CUSTOMER
-                                        ? 'bg-white text-indigo-600 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-white text-indigo-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
                                     }`}
                             >
                                 Customer
@@ -58,8 +58,8 @@ const Navbar = () => {
                             <button
                                 onClick={() => switchRole(ROLES.PROVIDER)}
                                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${currentRole === ROLES.PROVIDER
-                                        ? 'bg-white text-indigo-600 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-white text-indigo-600 shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-700'
                                     }`}
                             >
                                 Provider
