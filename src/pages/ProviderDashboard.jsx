@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { providers } from '../data/providers';
 import RequestCard from '../components/provider/RequestCard';
-import { formatDate } from '../utils/helpers';
+import { formatDate, formatCurrency } from '../utils/helpers';
+import { useUser } from '../context/UserContext';
+import { TrendingUp, Users, CheckCircle, Clock } from 'lucide-react';
 
 const ProviderDashboard = () => {
-    // Simulate logged-in provider (ID 1: Sarah Jenkins)
-    const currentProviderId = 1;
+    const { user } = useUser();
+
+    // Fallback if not logged in or in dev mode
+    const currentProviderId = user?.id || 1;
     const providerProfile = providers.find(p => p.id === currentProviderId);
 
     // State for bookings
@@ -30,7 +34,7 @@ const ProviderDashboard = () => {
             }
         };
         fetchBookings();
-    }, []);
+    }, [currentProviderId]);
 
     const updateBookingStatus = async (bookingId, newStatus) => {
         try {
@@ -65,6 +69,10 @@ const ProviderDashboard = () => {
     const pendingRequests = myBookings.filter(b => b.status === 'requested' || b.status === 'pending');
     const upcomingJobs = myBookings.filter(b => b.status === 'confirmed');
     const pastJobs = myBookings.filter(b => b.status === 'completed' || b.status === 'cancelled');
+    const completedJobs = myBookings.filter(b => b.status === 'completed');
+
+    // Calculate dynamic earnings
+    const totalEarnings = completedJobs.reduce((sum, b) => sum + (b.amount || 0), 0);
 
     if (loading) {
         return <div className="text-center py-20">Loading your dashboard...</div>;
@@ -72,13 +80,53 @@ const ProviderDashboard = () => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 border-b border-gray-200 pb-6">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Provider Portal</h1>
-                    <p className="text-gray-500 mt-2">Welcome back, {providerProfile?.name}</p>
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">Provider Portal</h1>
+                <p className="text-gray-500 mt-2">Welcome back, {providerProfile?.name || user?.name || 'Professional'}</p>
+            </div>
+
+            {/* Quick Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-gray-500 text-sm font-medium">Earnings</span>
+                        <div className="p-2 bg-green-50 rounded-lg">
+                            <TrendingUp className="h-5 w-5 text-green-600" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{formatCurrency(totalEarnings)}</div>
                 </div>
-                <div className="mt-4 md:mt-0 bg-indigo-50 text-indigo-700 px-6 py-3 rounded-xl font-bold border border-indigo-100 shadow-sm">
-                    Earnings: <span className="text-2xl ml-2">$72</span>
+
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-gray-500 text-sm font-medium">Completed</span>
+                        <div className="p-2 bg-blue-50 rounded-lg">
+                            <CheckCircle className="h-5 w-5 text-blue-600" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{completedJobs.length}</div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-gray-500 text-sm font-medium">Active Requests</span>
+                        <div className="p-2 bg-yellow-50 rounded-lg">
+                            <Clock className="h-5 w-5 text-yellow-600" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">{pendingRequests.length}</div>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <span className="text-gray-500 text-sm font-medium">Customers</span>
+                        <div className="p-2 bg-purple-50 rounded-lg">
+                            <Users className="h-5 w-5 text-purple-600" />
+                        </div>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">
+                        {[...new Set(myBookings.map(b => b.customerName))].length}
+                    </div>
                 </div>
             </div>
 

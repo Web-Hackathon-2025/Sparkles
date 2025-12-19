@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MapPin } from 'lucide-react';
+import { Star, MapPin, Briefcase } from 'lucide-react';
 import Button from '../common/Button';
 import { formatCurrency } from '../../utils/helpers';
 
@@ -29,6 +29,11 @@ const ProviderCard = ({ provider, onBook }) => {
                             <span className="ml-1 text-sm font-bold text-gray-700">{provider.rating}</span>
                             <span className="ml-1 text-xs text-gray-500">({provider.reviews})</span>
                         </div>
+                    </div>
+
+                    <div className="flex items-center mt-3 text-sm text-gray-500">
+                        <Briefcase className="h-4 w-4 mr-1 text-gray-400" />
+                        <span>{provider.projects} projects completed</span>
                     </div>
 
                     <p className="mt-4 text-gray-500 text-sm line-clamp-2">{provider.about}</p>

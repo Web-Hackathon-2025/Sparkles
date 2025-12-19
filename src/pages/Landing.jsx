@@ -5,12 +5,15 @@ import Button from '../components/common/Button';
 import ProviderCard from '../components/customer/ProviderCard';
 import { categories } from '../data/categories';
 import { providers } from '../data/providers';
-import { useRole } from '../hooks/useRole';
+import { useUser } from '../context/UserContext';
+import LoginModal from '../components/auth/LoginModal';
 
 const Landing = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-    const { currentRole, ROLES } = useRole();
+    const { login, role, ROLES } = useUser();
+    const [showOnboarding, setShowOnboarding] = useState(false);
+    const [showLogin, setShowLogin] = useState(false);
 
     const featuredProviders = providers.slice(0, 3);
 
@@ -23,8 +26,8 @@ const Landing = () => {
     return (
         <div className="flex flex-col min-h-screen">
             {/* Visual Role Indicator */}
-            <div className={`py-2 text-center text-xs font-bold uppercase tracking-wider ${currentRole === ROLES.PROVIDER ? 'bg-indigo-900 text-indigo-100' : 'bg-blue-900 text-blue-100'}`}>
-                Current View: Karigar {currentRole}
+            <div className={`py-2 text-center text-xs font-bold uppercase tracking-wider ${role === ROLES.PROVIDER ? 'bg-indigo-900 text-indigo-100' : 'bg-blue-900 text-blue-100'}`}>
+                Current View: Karigar {role}
             </div>
 
             {/* Hero Section */}
@@ -48,20 +51,18 @@ const Landing = () => {
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Button
                                 size="lg"
-                                className="bg-white text-indigo-700 hover:bg-gray-50 shadow-xl border-none"
-                                onClick={() => navigate('/customer')}
+                                className="bg-white text-indigo-700 hover:bg-gray-50 shadow-xl border-none px-10 py-4 text-xl"
+                                onClick={() => setShowOnboarding(true)}
                             >
-                                Find a Professional
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="ghost"
-                                className="text-white border-white hover:bg-white hover:text-indigo-700"
-                                onClick={() => navigate('/provider')}
-                            >
-                                Join as a Pro
+                                Get Started
                             </Button>
                         </div>
+                        <p className="mt-4 text-sm text-indigo-200">
+                            Already have an account?{' '}
+                            <button onClick={() => setShowLogin(true)} className="underline hover:text-white font-medium">
+                                Sign In
+                            </button>
+                        </p>
                     </div>
                 </div>
 
@@ -72,6 +73,26 @@ const Landing = () => {
                     </svg>
                 </div>
             </section>
+
+            <OnboardingModal
+                isOpen={showOnboarding}
+                onClose={() => setShowOnboarding(false)}
+                onComplete={(userData) => {
+                    login(userData);
+                    setShowOnboarding(false);
+                    navigate(userData.role === ROLES.PROVIDER ? '/provider' : '/customer');
+                }}
+            />
+
+            <LoginModal
+                isOpen={showLogin}
+                onClose={() => setShowLogin(false)}
+                onLogin={(userData) => {
+                    login(userData);
+                    setShowLogin(false);
+                    navigate(userData.role === ROLES.PROVIDER ? '/provider' : '/customer');
+                }}
+            />
 
             {/* Why Karigar Section */}
             <section className="py-20 bg-gray-50">

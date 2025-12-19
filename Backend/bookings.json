@@ -1,42 +1,42 @@
 [
-    {
-        "id": 101,
-        "providerId": 1,
-        "customerName": "John Doe",
-        "service": "Deep Cleaning",
-        "date": "2025-10-15",
-        "status": "requested"
-    },
-    {
-        "id": 102,
-        "providerId": 1,
-        "customerName": "Alice Smith",
-        "service": "Move-out Clean",
-        "date": "2025-10-18",
-        "status": "confirmed"
-    },
-    {
-        "id": 103,
-        "providerId": 1,
-        "customerName": "Robert Jones",
-        "service": "Weekly Maintenance",
-        "date": "2025-10-01",
-        "status": "completed"
-    },
-    {
-        "id": 104,
-        "providerId": 2,
-        "customerName": "Emily Davis",
-        "service": "Faucet Repair",
-        "date": "2025-10-20",
-        "status": "requested"
-    },
-    {
-        "id": 105,
-        "providerId": 1,
-        "customerName": "Michael Brown",
-        "service": "Carpet Cleaning",
-        "date": "2025-09-28",
-        "status": "cancelled"
-    }
+  {
+    "id": 101,
+    "providerId": 1,
+    "customerName": "John Doe",
+    "service": "Deep Cleaning",
+    "date": "2025-10-15",
+    "status": "cancelled"
+  },
+  {
+    "id": 102,
+    "providerId": 1,
+    "customerName": "Alice Smith",
+    "service": "Move-out Clean",
+    "date": "2025-10-18",
+    "status": "confirmed"
+  },
+  {
+    "id": 103,
+    "providerId": 1,
+    "customerName": "Robert Jones",
+    "service": "Weekly Maintenance",
+    "date": "2025-10-01",
+    "status": "completed"
+  },
+  {
+    "id": 104,
+    "providerId": 2,
+    "customerName": "Emily Davis",
+    "service": "Faucet Repair",
+    "date": "2025-10-20",
+    "status": "requested"
+  },
+  {
+    "id": 105,
+    "providerId": 1,
+    "customerName": "Michael Brown",
+    "service": "Carpet Cleaning",
+    "date": "2025-09-28",
+    "status": "cancelled"
+  }
 ]
